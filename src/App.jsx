@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AppProvider, useApp } from './context/AppContext';
 import Header from './components/common/Header'; // Changed from Navbar
 import UserHome from './pages/UserHome';
@@ -45,9 +45,9 @@ const AppRoutes = () => {
 function App() {
   return (
     <AppProvider>
-      <BrowserRouter basename="/craftisland">
+      <HashRouter>
         <AppRoutes />
-      </BrowserRouter>
+      </HashRouter>
     </AppProvider>
   );
 }
