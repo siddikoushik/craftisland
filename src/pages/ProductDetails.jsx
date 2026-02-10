@@ -51,7 +51,7 @@ const ProductDetails = () => {
 
             <div className="max-w-[1500px] mx-auto p-4 grid grid-cols-1 lg:grid-cols-12 gap-8">
                 {/* Left Column: Images (4 cols) */}
-                <div className="lg:col-span-4 flex gap-4 sticky top-4 h-fit">
+                <div className="lg:col-span-4 flex gap-4 lg:sticky lg:top-4 h-fit relative">
                     {/* Thumbnails */}
                     <div className="flex flex-col gap-3 w-[50px]">
                         {product.images && product.images.length > 0 ? (
