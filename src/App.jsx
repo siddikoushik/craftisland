@@ -45,7 +45,7 @@ const AppRoutes = () => {
 function App() {
   return (
     <AppProvider>
-      <BrowserRouter>
+      <BrowserRouter basename="/craftisland">
         <AppRoutes />
       </BrowserRouter>
     </AppProvider>
