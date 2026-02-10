@@ -1,0 +1,104 @@
+@import "tailwindcss";
+
+:root {
+  /* Earthy Theme Palette */
+  --color-bg-main: #F8F5F0;
+  --color-bg-white: #EFE9E1;
+
+  --color-header-primary: #EFE9E1;
+  --color-header-secondary: #F8F5F0;
+
+  --color-text-primary: #2E2E2E;
+  --color-text-secondary: #6B6B6B;
+
+  --color-link: #5A3E2B;
+  --color-link-hover: #C9A24D;
+
+  --color-btn-primary: #5A3E2B;
+  --color-btn-primary-hover: #3F2A1D;
+  --color-btn-secondary: #EFE9E1;
+
+  --shadow-card: 0 4px 6px rgba(46, 46, 46, 0.1);
+
+  /* App Variables Mapped to New Theme */
+  --amz-bg: #F8F5F0;
+  /* Main Background: Warm Cream */
+  --amz-header-primary: #EFE9E1;
+  /* Secondary Background: Soft Beige */
+  --amz-header-secondary: #EFE9E1;
+
+  --amz-text: #2E2E2E;
+  /* Primary Text: Charcoal */
+  --amz-blue: #5A3E2B;
+  /* Primary Button/Links: Deep Brown */
+
+  --amz-orange: #C9A24D;
+  /* Accent: Muted Gold */
+  --amz-orange-hover: #B08D3C;
+
+  --amz-yellow-btn: #5A3E2B;
+  /* Primary Button: Deep Brown */
+  --amz-yellow-hover: #3F2A1D;
+  /* Hover: Darker Brown */
+  --amz-orange-btn: #C9A24D;
+  /* Secondary Action: Muted Gold */
+
+  --amz-light-dark: #EFE9E1;
+  /* Card Backgrounds: Soft Beige */
+  --amz-gray-text: #6B6B6B;
+  /* Secondary Text: Warm Gray */
+  --amz-border: #D8D2C8;
+  /* Borders: Light Taupe */
+}
+
+body {
+  margin: 0;
+  font-family: "Amazon Ember", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--amz-bg);
+  color: var(--amz-text);
+}
+
+/* Amazon Button Styles */
+.btn-primary {
+  background-color: var(--amz-yellow-btn);
+  border: 1px solid var(--amz-yellow-hover);
+  border-radius: 20px;
+  /* Slightly rounded */
+  color: #F8F5F0;
+  /* Warm Cream Text for Contrast */
+  padding: 0.5rem 1rem;
+  font-size: 13px;
+  cursor: pointer;
+  box-shadow: 0 2px 5px 0 rgba(46, 46, 46, .2);
+  transition: all 0.1s;
+}
+
+.btn-primary:hover {
+  background-color: var(--amz-yellow-hover);
+  border-color: #2E2E2E;
+}
+
+.text-link:hover {
+  text-decoration: underline;
+  color: var(--color-link-hover);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
