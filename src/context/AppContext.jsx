@@ -63,13 +63,32 @@ export const AppProvider = ({ children }) => {
     }
   }, [userProfile.email]);
 
-  // 2. Save data when cart/wishlist changes
+  // 2. Save data when cart/wishlist changes (Optimized)
   useEffect(() => {
     const userId = userProfile.email || 'guest';
-    if (cart.length > 0 || userId !== 'guest') { // Optimization: don't save empty guest cart unnecessarily, but consistency is better
-      window.localStorage.setItem(`craftisland_cart_${userId}`, JSON.stringify(cart));
+    const key = `craftisland_cart_${userId}`;
+
+    if (cart.length > 0 || userId !== 'guest') {
+      try {
+        // OPTIMIZATION: Don't store large base64 images in LocalStorage.
+        // We only really need ID, Qty, Name, Price.
+        const sanitizedCart = cart.map(item => {
+          // If image is a huge data URL, don't save it to LS.
+          // If it's a short http URL (Cloudinary/Supabase), it's fine.
+          const isLargeImage = typeof item.image === 'string' && item.image.startsWith('data:image') && item.image.length > 1000;
+          return {
+            ...item,
+            image: isLargeImage ? '' : item.image, // Clear huge images from LS persistence
+            images: [] // Don't save array of images to LS either
+          };
+        });
+
+        window.localStorage.setItem(key, JSON.stringify(sanitizedCart));
+      } catch (e) {
+        console.error("LocalStorage Save Error:", e);
+      }
     } else if (cart.length === 0) {
-      window.localStorage.removeItem(`craftisland_cart_${userId}`);
+      window.localStorage.removeItem(key);
     }
   }, [cart, userProfile.email]);
 
