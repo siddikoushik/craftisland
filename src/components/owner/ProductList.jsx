@@ -14,7 +14,12 @@ const ProductList = ({ searchTerm = '' }) => {
     return (
         <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredProducts.length === 0 ? (
+                {products.length === 0 ? (
+                    <div className="col-span-full text-center py-12 bg-gray-50 rounded-lg border border-dashed border-gray-300">
+                        <p className="text-gray-500 text-lg">Your inventory is empty.</p>
+                        <p className="text-sm text-gray-400">Add a new product above to get started.</p>
+                    </div>
+                ) : filteredProducts.length === 0 ? (
                     <div className="col-span-full text-center py-8 text-gray-500">
                         No products found matching "{searchTerm}"
                     </div>

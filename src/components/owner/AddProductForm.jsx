@@ -8,7 +8,7 @@ const AddProductForm = () => {
         name: '',
         description: '',
         images: [],
-        category: 'Crafts',
+        category: 'Scented Candles',
         price: '',
         discountPercent: ''
     });
@@ -26,21 +26,51 @@ const AddProductForm = () => {
         }
     }, [formData.price, formData.discountPercent]);
 
-    const handleImageUpload = (e) => {
+    const resizeImage = (file) => {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (event) => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 800;
+                    const MAX_HEIGHT = 800;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width *= MAX_HEIGHT / height;
+                            height = MAX_HEIGHT;
+                        }
+                    }
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    resolve(canvas.toDataURL('image/jpeg', 0.7));
+                };
+            };
+        });
+    };
+
+    const handleImageUpload = async (e) => {
         if (e.target.files) {
             const files = Array.from(e.target.files);
-            const promises = files.map(file => {
-                return new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onload = (e) => resolve(e.target.result);
-                    reader.onerror = reject;
-                    reader.readAsDataURL(file);
-                });
-            });
-
-            Promise.all(promises).then(images => {
-                setFormData(prev => ({ ...prev, images: [...prev.images, ...images] }));
-            });
+            try {
+                const resizedImages = await Promise.all(files.map(file => resizeImage(file)));
+                setFormData(prev => ({ ...prev, images: [...prev.images, ...resizedImages] }));
+            } catch (error) {
+                console.error("Error resizing images:", error);
+                alert("Error processing images. Please try again.");
+            }
         }
     };
 
@@ -75,7 +105,7 @@ const AddProductForm = () => {
             name: '',
             description: '',
             images: [],
-            category: 'Crafts',
+            category: 'Scented Candles',
             price: '',
             discountPercent: ''
         });
@@ -149,9 +179,11 @@ const AddProductForm = () => {
                         value={formData.category}
                         onChange={e => setFormData({ ...formData, category: e.target.value })}
                     >
-                        <option>Crafts</option>
-                        <option>Tools</option>
-                        <option>Materials</option>
+                        <option value="Scented Candles">Scented Candles</option>
+                        <option value="Concrete Art Homedecor">Concrete Art Homedecor</option>
+                        <option value="Resin Art">Resin Art</option>
+                        <option value="Personalized Greeting Cards">Personalized Greeting Cards</option>
+                        <option value="Personalized Albums">Personalized Albums</option>
                     </select>
 
                     <div className="grid grid-cols-2 gap-4">

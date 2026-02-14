@@ -2,6 +2,7 @@ import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AppProvider, useApp } from './context/AppContext';
 import Header from './components/common/Header'; // Changed from Navbar
 import UserHome from './pages/UserHome';
+import CollectionPage from './pages/CollectionPage';
 import ProductDetails from './pages/ProductDetails';
 import OwnerDashboard from './pages/OwnerDashboard';
 import CartPage from './pages/CartPage';
@@ -22,6 +23,7 @@ const AppRoutes = () => {
       <Header />
       <Routes>
         <Route path="/" element={<UserHome />} />
+        <Route path="/collections/:category" element={<CollectionPage />} />
         <Route path="/product/:id" element={<ProductDetails />} />
 
         {/* Owner Routes */}

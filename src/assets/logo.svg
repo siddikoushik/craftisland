@@ -1,0 +1,24 @@
+<svg width="200" height="80" viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg">
+  <!-- Watercolor Pink Background -->
+  <defs>
+    <filter id="watercolor">
+      <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" result="noise" />
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="5" />
+    </filter>
+  </defs>
+  
+  <rect x="50" y="10" width="100" height="60" fill="#fce4ec" opacity="0.8" rx="30" filter="url(#watercolor)" />
+  
+  <!-- Hexagon Frame (Simplified) -->
+  <polygon points="50,40 60,10 140,10 150,40 140,70 60,70" fill="none" stroke="#D4Af37" stroke-width="2" />
+
+  <!-- Floral Accents (Simplified Circles for now) -->
+  <circle cx="50" cy="40" r="5" fill="#f8bbd0" />
+  <circle cx="150" cy="40" r="5" fill="#f8bbd0" />
+  <circle cx="60" cy="10" r="3" fill="#81c784" />
+  <circle cx="140" cy="70" r="3" fill="#81c784" />
+
+  <!-- Text -->
+  <text x="100" y="35" font-family="serif" font-size="16" fill="#4a4a4a" text-anchor="middle" font-weight="bold">CRAFT</text>
+  <text x="100" y="55" font-family="serif" font-size="16" fill="#4a4a4a" text-anchor="middle" font-weight="bold">ISLAND</text>
+</svg>
