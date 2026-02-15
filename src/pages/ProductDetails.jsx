@@ -75,8 +75,8 @@ const ProductDetails = () => {
                     </div>
 
                     {/* Main Image */}
-                    <div className="flex-1 text-center bg-white p-4 rounded-sm">
-                        <img src={activeImage || product.image} alt={product.name} className="max-h-[500px] max-w-full object-contain mx-auto" />
+                    <div className="flex-1 bg-white p-4 rounded-sm flex items-center justify-center w-full aspect-square">
+                        <img src={activeImage || product.image} alt={product.name} className="max-h-full max-w-full object-contain" />
                     </div>
                 </div>
 

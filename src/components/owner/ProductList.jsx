@@ -26,7 +26,7 @@ const ProductList = ({ searchTerm = '' }) => {
                 ) : (
                     filteredProducts.map(product => (
                         <div key={product.id} className="bg-white border border-[#D5D9D9] rounded-lg overflow-hidden group shadow-sm hover:shadow-md transition-shadow">
-                            <div className="relative h-48 overflow-hidden bg-white p-2">
+                            <div className="relative w-full aspect-square overflow-hidden bg-white p-2">
                                 <img
                                     src={product.images && product.images.length > 0 ? product.images[0] : product.image}
                                     alt={product.name}

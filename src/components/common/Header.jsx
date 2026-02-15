@@ -5,8 +5,11 @@ import { useApp } from '../../context/AppContext';
 import logo from '../../assets/logo.png';
 
 const Header = () => {
-    const { cart, userRole, setUserRole, userProfile, updateUserProfile, handleSignOut } = useApp();
+    const { cart, userRole, setUserRole, userProfile, updateUserProfile, handleSignOut, products } = useApp();
     const [searchQuery, setSearchQuery] = useState('');
+    const [suggestions, setSuggestions] = useState([]);
+    const [showSuggestions, setShowSuggestions] = useState(false);
+    const [showMobileSearch, setShowMobileSearch] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isSticky, setIsSticky] = useState(false);
     const navigate = useNavigate();
@@ -19,12 +22,70 @@ const Header = () => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
+    // Filter suggestions when query changes
+    useEffect(() => {
+        if (searchQuery.trim().length > 0) {
+            const matches = products.filter(p =>
+                p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                p.category.toLowerCase().includes(searchQuery.toLowerCase())
+            ).slice(0, 5); // Limit to 5
+            setSuggestions(matches);
+            setShowSuggestions(true);
+        } else {
+            setSuggestions([]);
+            setShowSuggestions(false);
+        }
+    }, [searchQuery, products]);
+
     const handleSearch = (e) => {
         e.preventDefault();
+        setShowSuggestions(false);
+        setShowMobileSearch(false);
         navigate(`/?search=${searchQuery}`);
     };
 
+    const handleSuggestionClick = (productId) => {
+        navigate(`/product/${productId}`);
+        setSearchQuery('');
+        setShowSuggestions(false);
+        setShowMobileSearch(false);
+    };
+
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+
+    // Helper for Suggestions List
+    const SuggestionsList = ({ mobile }) => (
+        <div className={`absolute top-full bg-white shadow-2xl rounded-sm border border-gray-100 overflow-hidden z-[60] mt-1 animate-fadeIn ${mobile ? 'left-0 w-full' : 'left-1/2 -translate-x-1/2 w-[350px] md:w-[450px]'}`}>
+            <div className="px-5 py-3 text-[11px] font-bold text-gray-400 tracking-widest border-b border-gray-100 bg-gray-50/50">
+                PRODUCTS
+            </div>
+            {suggestions.map(product => (
+                <div
+                    key={product.id}
+                    onClick={() => handleSuggestionClick(product.id)}
+                    className="flex items-center gap-4 p-4 hover:bg-gray-50 cursor-pointer border-b border-gray-50 last:border-none transition-colors group"
+                >
+                    <div className="w-14 h-14 bg-gray-50 flex items-center justify-center rounded-sm overflow-hidden flex-shrink-0">
+                        <img
+                            src={product.images ? product.images[0] : product.image}
+                            alt={product.name}
+                            className="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-300"
+                        />
+                    </div>
+                    <div className="flex flex-col gap-0.5">
+                        <span className="text-[14px] font-medium text-gray-900 leading-snug">{product.name}</span>
+                        <span className="text-[13px] text-gray-500">₹{product.discountPrice || product.price}</span>
+                    </div>
+                </div>
+            ))}
+            <div
+                onClick={(e) => handleSearch(e)}
+                className="p-3 text-center text-[12px] font-bold text-black border-t border-gray-100 uppercase tracking-widest cursor-pointer hover:bg-black hover:text-white transition-all"
+            >
+                View all {products.filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase())).length} results
+            </div>
+        </div>
+    );
 
     if (userRole === 'owner') {
         return (
@@ -40,7 +101,7 @@ const Header = () => {
     return (
         <header className="flex flex-col bg-white font-sans relative">
             {/* Top Bar: Logo & Icons */}
-            <div className="flex items-center justify-between px-6 py-4 bg-white relative z-20">
+            <div className="flex items-center justify-between px-6 py-4 bg-white relative z-50">
                 {/* Logo */}
                 <Link to="/" className="flex items-center justify-center">
                     <img src={logo} alt="Craft Island" className="h-[100px] w-auto object-contain" />
@@ -48,21 +109,39 @@ const Header = () => {
 
                 {/* Right Icons */}
                 <div className="flex items-center gap-6 text-gray-700">
-                    <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="lg:hidden text-black">
-                        <Menu size={28} />
-                    </button>
+                    {/* Mobile Icons */}
+                    <div className="lg:hidden flex items-center gap-5 text-black">
+                        <button onClick={() => setShowMobileSearch(!showMobileSearch)}>
+                            <Search size={24} />
+                        </button>
+                        <Link to="/cart" className="relative">
+                            <ShoppingCart size={24} />
+                            <span className="absolute -top-2 -right-2 bg-pink-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
+                                {cart.reduce((a, c) => a + c.qty, 0)}
+                            </span>
+                        </Link>
+                        <button onClick={() => setIsMenuOpen(!isMenuOpen)}>
+                            <Menu size={28} />
+                        </button>
+                    </div>
 
+                    {/* Desktop Icons */}
                     <div className="hidden lg:flex items-center gap-5">
                         <div className="relative group">
                             <input
                                 type="text"
                                 placeholder="Search..."
-                                className="pl-8 pr-2 py-1 text-sm border-b border-gray-300 focus:border-pink-500 outline-none w-0 group-hover:w-40 transition-all duration-300 focus:w-40"
+                                className="pl-8 pr-2 py-1 text-sm border-b border-gray-300 focus:border-pink-500 outline-none w-40 focus:w-60 transition-all duration-300"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 onKeyDown={(e) => e.key === 'Enter' && handleSearch(e)}
+                                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                                onFocus={() => searchQuery.length > 0 && setShowSuggestions(true)}
                             />
                             <Search size={20} className="absolute left-0 top-1.5 cursor-pointer hover:text-pink-500" onClick={handleSearch} />
+
+                            {/* Suggestions Dropdown */}
+                            {showSuggestions && suggestions.length > 0 && <SuggestionsList />}
                         </div>
 
                         <Link to={userProfile.name ? "/profile" : "/login"} title="Profile">
@@ -84,6 +163,25 @@ const Header = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Mobile Search Bar Dropdown */}
+            {showMobileSearch && (
+                <div className="lg:hidden absolute top-full left-0 w-full bg-white px-6 py-4 border-t border-gray-100 z-40 shadow-xl">
+                    <div className="relative">
+                        <input
+                            type="text"
+                            placeholder="Search..."
+                            className="w-full pl-10 pr-4 py-2 text-sm border border-gray-200 rounded-full focus:border-black outline-none transition-all"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleSearch(e)}
+                            autoFocus
+                        />
+                        <Search size={18} className="absolute left-3.5 top-2.5 text-gray-400" />
+                        {showSuggestions && suggestions.length > 0 && <SuggestionsList mobile={true} />}
+                    </div>
+                </div>
+            )}
 
             {/* 1. Static Navigation Bar (Always displayed in flow) */}
             <div className={`hidden lg:flex items-center justify-center relative mx-auto w-[98%] max-w-[1700px] rounded-2xl bg-black py-4 shadow-lg mb-8 z-40 transition-all duration-300 ${isSticky ? 'opacity-0 invisible' : 'opacity-100 visible'}`}>
@@ -107,7 +205,7 @@ const Header = () => {
             </div>
 
             {/* 2. Sticky Floating Header (Slides down when scrolled) */}
-            <div className={`hidden lg:flex items-center fixed left-1/2 -translate-x-1/2 w-[90%] max-w-[1400px] rounded-full bg-black/90 backdrop-blur-md py-3 shadow-2xl border border-white/10 z-50 transition-all duration-500 ease-in-out ${isSticky ? 'top-4 scale-100 opacity-100 visible' : 'top-4 scale-95 opacity-0 invisible'}`}>
+            <div className={`hidden lg:flex items-center fixed left-1/2 -translate-x-1/2 w-[90%] max-w-[1400px] rounded-full bg-black/70 backdrop-blur-md py-3 shadow-2xl border border-white/10 z-50 transition-all duration-500 ease-in-out ${isSticky ? 'top-4 scale-100 opacity-100 visible' : 'top-4 scale-95 opacity-0 invisible'}`}>
                 <div className="w-full px-8 flex items-center justify-between">
 
                     {/* Logo */}
@@ -140,12 +238,17 @@ const Header = () => {
                             <input
                                 type="text"
                                 placeholder="Search..."
-                                className="pl-8 pr-2 py-1 text-sm bg-transparent border-b border-gray-500 text-white placeholder-gray-400 focus:border-white outline-none w-0 group-hover:w-40 transition-all duration-300 focus:w-40"
+                                className="pl-8 pr-2 py-1 text-sm bg-transparent border-b border-gray-500 text-white placeholder-gray-400 focus:border-white outline-none w-40 focus:w-60 transition-all duration-300"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 onKeyDown={(e) => e.key === 'Enter' && handleSearch(e)}
+                                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                                onFocus={() => searchQuery.length > 1 && setShowSuggestions(true)}
                             />
                             <Search size={20} className="absolute left-0 top-1.5 cursor-pointer text-white hover:text-pink-400" onClick={handleSearch} />
+
+                            {/* Suggestions Dropdown (Sticky) */}
+                            {showSuggestions && suggestions.length > 0 && <SuggestionsList />}
                         </div>
 
                         <Link to={userProfile.name ? "/profile" : "/login"} title="Profile">
