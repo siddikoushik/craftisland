@@ -1,0 +1,126 @@
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id              String   @id @default(uuid())
+  email           String   @unique
+  password        String   // Hashed password
+  name            String
+  phone           String?
+  address         String?
+  scentPreference String?  @default("Woodsy & Earthy")
+  selectedMood    String?  @default("Calm")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  orders          Order[]
+}
+
+model Product {
+  id          String   @id // Unique identifier e.g. "amber-noir"
+  slug        String   @unique
+  name        String
+  tagline     String
+  description String
+  story       String
+  collection  String   // "signature" | "seasonal" | "limited"
+  moods       String   // Comma-separated (e.g. "Warm, Cozy, Evening")
+  image       String
+  price       Float
+  variants    String   // Serialized JSON ProductVariant[]
+  notesTop    String   // Comma-separated scent notes
+  notesHeart  String   // Comma-separated scent notes
+  notesBase   String   // Comma-separated scent notes
+  rating      Float    @default(5.0)
+  reviewCount Int      @default(0)
+  bestseller  Boolean  @default(false)
+  isNew       Boolean  @default(false)
+  inStock     Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Order {
+  id             String   @id @default(uuid())
+  customerName   String
+  customerEmail  String?
+  items          String   // Serialized JSON OrderItem[]
+  total          Float
+  status         String   // "Processing" | "Shipped" | "Delivered"
+  paymentMethod  String   // "UPI / GPay" | "Direct Contact Payment"
+  paymentDetails String?  // Optional transaction details (VPA, bank reference)
+  date           String   // Date string "YYYY-MM-DD"
+  userId         String?
+  user           User?    @relation(fields: [userId], references: [id])
+  createdAt      DateTime @default(now())
+}
+
+model HomepageSettings {
+  id                   String @id @default("active")
+  heroImage            String
+  heroTagline          String
+  heroTitle            String
+  heroDescription      String
+  heroPrimaryBtnText   String
+  heroSecondaryBtnText String
+  
+  prop1Title           String
+  prop1Desc            String
+  prop1Icon            String
+  
+  prop2Title           String
+  prop2Desc            String
+  prop2Icon            String
+  
+  prop3Title           String
+  prop3Desc            String
+  prop3Icon            String
+  
+  prop4Title           String
+  prop4Desc            String
+  prop4Icon            String
+  
+  craftImage           String
+  craftTagline         String
+  craftTitle           String
+  craftDescription     String
+  craftBullets         String // New-line separated bullet points
+  craftBtnText         String
+  
+  scentHeading         String
+  scentSubtitle        String
+  scentFloralDesc      String
+  scentWoodyDesc       String
+  scentGourmandDesc    String
+  scentFreshDesc       String
+  
+  testimonialHeading   String @default("Loved by thousands")
+  testimonialTitle     String @default("Over 12,000 five-star reviews")
+  testimonial1Body     String @default("Amber Noir is the only candle I buy now. My whole house smells like a luxury hotel.")
+  testimonial1Author   String @default("Eleanor M.")
+  testimonial1Location String @default("Verified Buyer")
+  testimonial2Body     String @default("The scent throw is unreal — I light one in the living room and can smell it upstairs.")
+  testimonial2Author   String @default("James T.")
+  testimonial2Location String @default("Verified Buyer")
+  testimonial3Body     String @default("Beautifully made and the vessels are gorgeous. I keep them for plants once they’re done.")
+  testimonial3Author   String @default("Sofia R.")
+  testimonial3Location String @default("Verified Buyer")
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  productId String
+  author    String
+  rating    Int
+  title     String
+  body      String
+  date      String
+  verified  Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
